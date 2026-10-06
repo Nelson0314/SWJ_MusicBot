@@ -48,16 +48,26 @@ def load_opus_library() -> bool:
     return False
 
 
-def build_ffmpeg_options(headers: dict = None) -> dict:
+def build_ffmpeg_options(headers: dict = None, start: float = 0, duration: float = 0) -> dict:
     before_opts = "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
 
+    if start and start > 0:
+        # 放在 -i 之前可以直接跳轉，不必從頭讀取
+        before_opts = f"-ss {float(start):.2f} " + before_opts
+
     if headers and isinstance(headers, dict):
-        headers_str = "".join(f"{k}: {v}\r\n" for k, v in headers.items())
+        headers_str = "".join(
+            f"{k}: {str(v).replace(chr(34), '')}\r\n" for k, v in headers.items()
+        )
         before_opts += f' -headers "{headers_str}"'
+
+    options = "-vn -filter:a 'volume=0.5'"
+    if duration and duration > 0:
+        options += f" -t {float(duration):.2f}"
 
     opts = {
         "before_options": before_opts,
-        "options": "-vn -filter:a 'volume=0.5'"
+        "options": options
     }
     
     if os.path.exists("ffmpeg.exe"):

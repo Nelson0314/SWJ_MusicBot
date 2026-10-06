@@ -14,13 +14,13 @@ async def playlist_name_autocomplete(
 
     if not current:
         return [
-            app_commands.Choice(name=n, value=n)
+            app_commands.Choice(name=n[:100], value=n[:100])
             for n in names[:25]
         ]
 
     filtered = [n for n in names if current.lower() in n.lower()]
     return [
-        app_commands.Choice(name=n, value=n)
+        app_commands.Choice(name=n[:100], value=n[:100])
         for n in filtered[:25]
     ]
 
@@ -39,13 +39,13 @@ async def song_title_autocomplete(
 
     if not current:
         return [
-            app_commands.Choice(name=t, value=t)
+            app_commands.Choice(name=t[:100], value=t[:100])
             for t in titles[:25]
         ]
 
     filtered = [t for t in titles if current.lower() in t.lower()]
     return [
-        app_commands.Choice(name=t, value=t)
+        app_commands.Choice(name=t[:100], value=t[:100])
         for t in filtered[:25]
     ]
 
@@ -59,12 +59,12 @@ async def banned_keyword_autocomplete(
 
     if not current:
         return [
-            app_commands.Choice(name=k, value=k)
+            app_commands.Choice(name=k[:100], value=k[:100])
             for k in keywords[:25]
         ]
 
     filtered = [k for k in keywords if current.lower() in k.lower()]
     return [
-        app_commands.Choice(name=k, value=k)
+        app_commands.Choice(name=k[:100], value=k[:100])
         for k in filtered[:25]
     ]
