@@ -43,3 +43,6 @@ cookies.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Local binaries (exceeds GitHub 100MB limit)
+ffmpeg.exe

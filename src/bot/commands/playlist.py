@@ -11,9 +11,9 @@ from src.utils.filters import keyword_filter
 
 
 class PlaylistCommands(commands.Cog):
-    def __init__(self, bot: commands.Bot, player):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.player = player
+        self.player = bot.music_player
 
     @app_commands.command(name="create-playlist", description="建立新的播放清單")
     @app_commands.describe(name="播放清單名稱")
@@ -167,5 +167,5 @@ class PlaylistCommands(commands.Cog):
             await self.player.start_playing(voice_client, guild_id, interaction.channel)
 
 
-async def setup(bot: commands.Bot, player):
-    await bot.add_cog(PlaylistCommands(bot, player))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(PlaylistCommands(bot))

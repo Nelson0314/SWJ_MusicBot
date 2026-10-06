@@ -9,9 +9,9 @@ from src.data.storage import banned_keywords_manager
 
 
 class MusicCommands(commands.Cog):
-    def __init__(self, bot: commands.Bot, player):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.player = player
+        self.player = bot.music_player
 
     @app_commands.command(name="play", description="播放音樂")
     @app_commands.describe(query="歌曲名稱或關鍵字")
@@ -150,5 +150,5 @@ class MusicCommands(commands.Cog):
             await interaction.response.send_message("機器人不在語音頻道中！")
 
 
-async def setup(bot: commands.Bot, player):
-    await bot.add_cog(MusicCommands(bot, player))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(MusicCommands(bot))

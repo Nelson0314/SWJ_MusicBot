@@ -3,6 +3,8 @@ from typing import Optional, Tuple, Dict, Any
 import yt_dlp
 
 
+import os
+
 class YouTubeSearcher:
     def __init__(self):
         self._base_options = {
@@ -11,14 +13,19 @@ class YouTubeSearcher:
             "youtube_include_dash_manifest": False,
             "youtube_include_hls_manifest": False,
             "extractor_args": {
-                "youtube": ["player_client=web"]
+                "youtube": ["player_client=default,-android_sdkless"]
             },
             "quiet": True,
             "no_warnings": True,
+            "nocheckcertificate": True,
         }
 
     def _build_options(self, cookies_file: Optional[str] = None) -> dict:
         opts = self._base_options.copy()
+        
+        if not cookies_file and os.path.exists("cookies.txt"):
+            cookies_file = "cookies.txt"
+            
         if cookies_file:
             opts["cookiefile"] = cookies_file
         return opts
