@@ -354,11 +354,6 @@ class YouTubeSearcher:
             return None, "播放清單是空的或無法讀取！"
         return {"title": result.get("title") or "YouTube 播放清單", "entries": entries}, None
 
-    def invalidate(self, query: str, cookies_file: Optional[str] = None):
-        query = query.strip()
-        target = query if is_url(query) else f"ytsearch1:{query}"
-        self._cache.pop(f"{cookies_file or ''}|{target}")
-
     def shutdown(self):
         self._executor.shutdown(wait=False, cancel_futures=True)
 

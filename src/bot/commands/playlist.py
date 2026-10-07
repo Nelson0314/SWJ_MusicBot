@@ -155,7 +155,6 @@ class PlaylistCommands(commands.Cog):
                 title=song.get("title") or song.get("query", "未知標題"),
                 headers={},
                 requester=interaction.user.display_name,
-                requester_id=interaction.user.id,
                 query=song.get("query") or song.get("title", ""),
                 webpage_url=song.get("url", ""),
                 source_playlist=playlist_name,

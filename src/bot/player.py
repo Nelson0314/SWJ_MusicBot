@@ -91,7 +91,6 @@ class GuildPlayerState:
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     volume: float = 1.0
     source: Optional[_TrackedMixin] = None
-    current: Optional[SongInfo] = None
     text_channel: Optional[discord.abc.Messageable] = None
     generation: int = 0
     skip_requested: bool = False
@@ -208,7 +207,6 @@ class MusicPlayer:
         state.generation += 1
         generation = state.generation
         state.source = source
-        state.current = song
         state.skip_requested = False
 
         loop = self.bot.loop
@@ -225,29 +223,6 @@ class MusicPlayer:
 
         voice_client.play(source, after=after_callback)
 
-    async def play_song(self, voice_client: discord.VoiceClient, song: SongInfo, guild_id: str, channel: discord.TextChannel):
-        """播放指定歌曲；載入失敗時會自動換下一首。"""
-        state = self.get_state(guild_id)
-        state.text_channel = channel
-        ok, error = await self.prepare_song(song, guild_id)
-        if ok and voice_client.is_connected():
-            try:
-                self._start_source(voice_client, song, guild_id, channel)
-            except discord.ClientException as e:
-                ok, error = False, str(e)
-        if not ok:
-            if not voice_client.is_connected():
-                return False
-            queue_manager.drop_current(guild_id)
-            await self._safe_send(channel, f"⚠️ 無法播放 **{song.title}**：{error}，已自動跳過。")
-            return await self._advance(voice_client, guild_id, channel)
-
-        state.stream_retries = 0
-        stats_manager.record_play(guild_id, song.title, song.requester)
-        await self._send_now_playing(channel, song.title, song)
-        self._schedule_prefetch(guild_id)
-        return True
-
     async def _advance(self, voice_client: discord.VoiceClient, guild_id: str, channel, force: bool = False) -> bool:
         """從待播清單取出下一首並播放，跳過無法載入的歌曲。"""
         state = self.get_state(guild_id)
@@ -258,7 +233,6 @@ class MusicPlayer:
                 song = queue_manager.get_next(guild_id, force_advance=force)
                 force = False
                 if not song:
-                    state.current = None
                     state.source = None
                     return False
 
@@ -582,7 +556,6 @@ class MusicPlayer:
 
     def _reset_state(self, guild_id: str):
         state = self.get_state(guild_id)
-        state.current = None
         state.source = None
         state.exclusive = None
         state.skip_requested = False

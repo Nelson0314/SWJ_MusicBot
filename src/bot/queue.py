@@ -2,7 +2,7 @@ import random
 import time
 from collections import deque
 from typing import Dict, Optional, List
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 # 循環模式
 LOOP_OFF = "off"
@@ -24,13 +24,7 @@ class SongInfo:
     thumbnail: str = ""
     uploader: str = ""
     expires: float = 0.0        # 串流網址過期時間 (epoch)
-    requester_id: int = 0
     source_playlist: str = ""   # 從哪個已儲存播放清單加入
-    added_at: float = field(default_factory=time.time)
-
-    @property
-    def is_resolved(self) -> bool:
-        return bool(self.url)
 
     def needs_refresh(self, margin: float = 600) -> bool:
         """串流網址不存在或快過期時需要重新解析。"""
@@ -68,9 +62,6 @@ class GuildMusicQueue:
 
     def add_many(self, songs: List[SongInfo]):
         self._queue.extend(songs)
-
-    def add_front(self, song: SongInfo):
-        self._queue.appendleft(song)
 
     def next(self, force_advance: bool = False) -> Optional[SongInfo]:
         current = self._current

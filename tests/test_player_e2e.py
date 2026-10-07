@@ -217,7 +217,7 @@ class PlayerEndToEndTests(unittest.TestCase):
             self.assertEqual(queue_manager.get_current_song(gid).query, "song0")
 
             # 預先載入下一首
-            self.assertTrue(await self._wait_for(lambda: queue_manager.peek(gid, 1)[0].is_resolved, 5))
+            self.assertTrue(await self._wait_for(lambda: not queue_manager.peek(gid, 1)[0].needs_refresh(), 5))
 
             # 第一首播完後自動接下一首
             self.assertTrue(await self._wait_for(
